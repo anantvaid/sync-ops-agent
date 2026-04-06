@@ -1,0 +1,7 @@
+google-adk
+google-cloud-firestore
+requests
+fastapi
+uvicorn
+python-dotenv
+google-generativeai
