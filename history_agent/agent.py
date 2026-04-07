@@ -1,10 +1,34 @@
 from google.adk.agents import Agent
 from google.adk.tools import FunctionTool
 import os
+from google.cloud import firestore
 
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from meeting_agent.agent import get_meetings_from_firestore
+db = firestore.Client()
+
+def get_meetings_from_firestore(limit: int = 10) -> dict:
+    """Retrieves the most recent meeting summaries from Firestore.
+    Use this when the user asks about past meetings or history.
+    Args:
+        limit: number of meetings to return (default 10, max 50)
+    """
+    try:
+        limit = min(limit, 50)
+        docs = (
+            db.collection("meetings")
+            .order_by("created_at", direction="DESCENDING")
+            .limit(limit)
+            .stream()
+        )
+        meetings = []
+        for doc in docs:
+            data = doc.to_dict()
+            data["id"] = doc.id
+            meetings.append(data)
+
+        return {"meetings": meetings, "count": len(meetings)}
+    except Exception as e:
+        logger.error(f"Firestore read failed: {e}")
+        return {"meetings": [], "count": 0, "error": str(e)}
 
 root_agent = Agent(
     name="history_agent",
