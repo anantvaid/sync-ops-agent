@@ -6,7 +6,7 @@
 
 > No more post-meeting admin work. Turn raw transcripts into structured summaries, assigned action items, and live Linear tickets in under 60 seconds.
 
-Built with **GCP ADK**, **Gemini 2.5 Pro**, **Cloud Run**, and **Firestore** for the Gen AI Academy APAC Hackathon 2026.
+Built with **GCP ADK**, **Gemini 2.5 Pro**, **Gemini 2.5 Flash**, **Cloud Run**, and **Firestore** for the Gen AI Academy APAC Hackathon 2026.
 
 ---
 
@@ -37,13 +37,13 @@ User Input (ADK UI / REST API)
 │  └──────┬──────┘                        │
 │         │                               │
 │  ┌──────▼──────┐                        │
-│  │   Ticket    │ Gemini 2.5 Pro         │
+│  │   Ticket    │ Gemini 2.5 Flash       │
 │  │  Creator    │ → Linear GraphQL API   │
 │  │    Agent    │ → Firestore save       │
 │  └──────┬──────┘                        │
 │         │                               │
 │  ┌──────▼──────┐                        │
-│  │  Formatter  │ Gemini 2.5 Pro         │
+│  │  Formatter  │ Gemini 2.5 Flash       │
 │  │    Agent    │ → Slack-ready digest   │
 │  └─────────────┘                        │
 └─────────────────────────────────────────┘
@@ -66,9 +66,9 @@ Instead of one massive prompt, SyncOps delegates tasks to specialized agents to 
 | Agent | Model | Responsibility | Tools |
 |-------|-------|---------------|-------|
 | `summarizer` | Gemini 2.5 Pro | Reads the transcript, cuts the noise, and extracts concrete decisions and action items | — |
-| `ticket_creator` | Gemini 2.5 Pro | The "hands" of the operation. Creates real Linear tickets for every action item | `create_linear_ticket`, `save_meeting_to_firestore` |
-| `formatter` | Gemini 2.5 Pro | Produces Slack-ready digest with ticket URLs | — |
-| `history_agent` | Gemini 2.5 Pro | Answers queries about past meetings | `get_meetings_from_firestore` |
+| `ticket_creator` | Gemini 2.5 Flash | The "hands" of the operation. Creates real Linear tickets for every action item | `create_linear_ticket`, `save_meeting_to_firestore` |
+| `formatter` | Gemini 2.5 Flash | Produces Slack-ready digest with ticket URLs | — |
+| `history_agent` | Gemini 2.5 Flash | Answers queries about past meetings | `get_meetings_from_firestore` |
 
 ---
 
@@ -78,7 +78,7 @@ I chose this stack specifically for speed, scalability, and native integration w
 
 - AI Orchestration: GCP ADK (Provides the native multi-agent pipeline and built-in UI).
 
-- The Brains: Gemini 2.5 Pro via Vertex AI (Powerful model that accurately answers).
+- The Brains: Gemini 2.5 Pro and Gemini 2.5 Flash via Vertex AI (Powerful model that accurately answers).
 
 - Infrastructure: Google Cloud Run (Serverless, scales to zero, perfectly hosts the ADK UI).
 
