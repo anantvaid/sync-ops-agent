@@ -8,7 +8,7 @@ from meeting_agent.agent import get_meetings_from_firestore
 
 root_agent = Agent(
     name="history_agent",
-    model="gemini-2.5-pro",
+    model=os.environ.get("MODEL_NAME_FLASH", ""),
     description="Look up and summarise past meetings stored in Firestore.",
     instruction="""You help users look up past meeting history from Firestore.
 

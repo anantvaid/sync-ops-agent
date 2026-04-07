@@ -32,7 +32,7 @@ def get_meetings_from_firestore(limit: int = 10) -> dict:
     try:
         limit = min(limit, 50)
         docs = (
-            db().collection("meetings")
+            db.collection("meetings")
             .order_by("created_at", direction="DESCENDING")
             .limit(limit)
             .stream()
@@ -116,7 +116,7 @@ def create_linear_ticket(title: str, description: str, assignee_name: str) -> di
 
 summarizer_agent = Agent(
     name="summarizer",
-    model=os.environ.get("MODEL_NAME", ""),
+    model=os.environ.get("MODEL_NAME_PRO", ""),
     instruction="""You are a meeting summarizer. Analyze the transcript carefully.
 
     If the transcript is too short (under 20 words) or clearly not a meeting, respond:
@@ -133,11 +133,12 @@ summarizer_agent = Agent(
             {"task": "...", "assignee": "...", "priority": "high"}
         ]
     }""",
+    generate_content_config={"temperature": 0}
 )
 
 ticket_creator_agent = Agent(
     name="ticket_creator",
-    model=os.environ.get("MODEL_NAME", ""),
+    model=os.environ.get("MODEL_NAME_FLASH", ""),
     instruction="""You receive structured meeting data with a summary and action items.
 
 For each action item, call create_linear_ticket with:
@@ -157,7 +158,7 @@ Report how many tickets succeeded and how many failed at the end.""",
 
 formatter_agent = Agent(
     name="formatter",
-    model=os.environ.get("MODEL_NAME", ""),
+    model=os.environ.get("MODEL_NAME_FLASH", ""),
     instruction="""You produce the final Slack-ready meeting digest.
 
 Format it exactly like this:
@@ -175,16 +176,6 @@ Format it exactly like this:
 _Processed by Meeting Summarizer · <today's date>_
 
 Keep it clean and scannable. If no Linear tickets were created, omit the ticket URLs.""",
-)
-
-history_agent = Agent(
-    name="history_agent",
-    model=os.environ.get("MODEL_NAME", ""),
-    description="Look up and summarise past meetings stored in Firestore.",
-    instruction="""You help users look up past meeting history.
-When asked about previous meetings, use get_meetings_from_firestore to retrieve them.
-Present results clearly — date, summary snippet, and number of action items per meeting.""",
-    tools=[FunctionTool(get_meetings_from_firestore)],
 )
 
 root_agent = SequentialAgent(
