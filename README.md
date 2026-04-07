@@ -236,6 +236,7 @@ Expected output: 3 Linear tickets created, structured summary, Slack-ready diges
 
 This is a prototype built in 7 days. Planned additions for the refinement phase:
 
+- **Linear User ID Mapping** — Action items correctly extract assignee names, but the Linear API requires internal UUIDs for assignment. Implementing a one-time team roster sync to map `String Name` -> `Linear User ID`.
 - **Slack webhook** — post digest directly to a Slack channel after every meeting
 - **Parallel ticket creation** — switch to ADK ParallelAgent to create all tickets simultaneously (estimated 6x speed improvement)
 - **Confidence scoring** — flag action items as high/medium/low confidence based on how explicitly they were stated
